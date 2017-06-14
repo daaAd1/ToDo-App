@@ -68,19 +68,32 @@ var handlers = {
 	},
 
 
-	changeTask: function() {
+	changeTask: function(index) {
 
-		//var taskPosition = document.getElementById('changeTaskPosition');
-		//var taskText = document.getElementById('changeTaskText');
-		//todoList.changeTaskText(taskPosition.valueAsNumber, taskText.value);
-		//taskPosition.value = '';
-		//taskText.value = '';
+		var taskLi = document.getElementById(index);
+		var taskLabel = taskLi.getElementsByTagName('label')[0];
 		var taskInput = document.createElement('input');
+
+		taskInput.text = taskLabel;
+		taskLabel.className += " edit";
 		taskInput.type = "text";
-		var taskOl = document.querySelector('ol');
-		taskOl.appendChild(taskInput);
-		taskInput.textContent = "abc";
-		view.displayTasks();
+		taskLi.appendChild(taskInput);
+		taskInput.focus();	
+
+		taskInput.onkeydown = function() {
+			if (event.keyCode === 13) {
+				taskLi.removeChild(taskInput);
+	        	taskLabel.innerHTML = taskInput.value;
+	        	taskLabel.classList.remove("edit");
+			}	
+		};
+
+		taskInput.onblur = function() {
+
+	        taskLi.removeChild(taskInput);
+	        taskLabel.innerHTML = taskInput.value;
+	        taskLabel.classList.remove("edit");   
+	    };
 	},
 
 
@@ -117,16 +130,15 @@ var view = {
 			var taskLabel = document.createElement('label');
 
 			taskLabel.textContent = task.text;
+			taskLabel.className = "label-text";
 			taskInput.className = "toggle";
 			taskInput.type = "checkbox";
 			taskLi.className = " ";	
 			taskInput.checked = false;
-			taskLabel.setAttribute('ondblclick', "handlers.changeTask()");
 
 			if (task.done) {
 				taskLi.className = "completed";
 				taskInput.checked = true;
-				//taskLi.textContent = "   " +  "(x) " + task.text + " " ;
 			}			
 
 			taskLi.id = index;
@@ -148,12 +160,7 @@ var view = {
 	},
 
 	eventListeners: function() {
-		//var elementClicked = event.target;
-		//var taskInput = document.querySelector('input');
-		//todoList.todoArr[parseInt(elementClicked.parentNode.id)].done = false;
-		//if(taskInput.checked) {
-		//	todoList.todoArr[parseInt(elementClicked.parentNode.id)].done = true;
-		//}
+
 		var taskOl = document.querySelector('ol');
 		taskOl.addEventListener('click', function(event) {
 			var elementClicked = event.target;
@@ -162,6 +169,15 @@ var view = {
 			}
 			else if (elementClicked.className === 'toggle') {
 				handlers.toggleTask(parseInt(elementClicked.parentNode.id));
+			}
+		});
+
+
+		taskOl.addEventListener('dblclick', function(event) {
+			var elementClicked = event.target;
+			if (elementClicked.className === 'label-text' 
+				&& todoList.todoArr[elementClicked.parentNode.id].done === false) {
+				handlers.changeTask(parseInt(elementClicked.parentNode.id));
 			}
 		});
 	}
