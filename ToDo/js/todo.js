@@ -62,7 +62,9 @@ var handlers = {
 	addTask: function() {
 
 		var addTaskText = document.getElementById('addTask');
-		todoList.addTask(addTaskText.value);
+		if (addTaskText.value !== "") {
+			todoList.addTask(addTaskText.value);	
+		}
 		addTaskText.value = '';
 		view.displayTasks();
 	},
@@ -73,27 +75,43 @@ var handlers = {
 		var taskLi = document.getElementById(index);
 		var taskLabel = taskLi.getElementsByTagName('label')[0];
 		var taskInput = document.createElement('input');
-
-		taskInput.text = taskLabel;
-		taskLabel.className += " edit";
+		var taskOl = document.querySelector('ol');
+		console.log(taskLi);
+		taskInput.value = taskLabel.innerHTML;
 		taskInput.type = "text";
+		taskLi.classList.add('edit');
 		taskLi.appendChild(taskInput);
 		taskInput.focus();	
 
 		taskInput.onkeydown = function() {
 			if (event.keyCode === 13) {
 				taskLi.removeChild(taskInput);
-	        	taskLabel.innerHTML = taskInput.value;
-	        	taskLabel.classList.remove("edit");
+				if (taskInput.value !== null) {
+					taskLabel.innerHTML = taskInput.value;
+				}
+				else {		
+					taskOl.removeChild(taskLi);
+				}
 			}	
+
+			taskLi.classList.remove("edit");
 		};
 
 		taskInput.onblur = function() {
-
 	        taskLi.removeChild(taskInput);
-	        taskLabel.innerHTML = taskInput.value;
-	        taskLabel.classList.remove("edit");   
+	        if (taskInput.value !== "") {
+				taskLabel.innerHTML = taskInput.value;
+			}
+			else {	
+				taskOl.removeChild(taskLi);
+				todoList.removeTask(index);
+				view.displayTasks();
+			}    
+
+			taskLi.classList.remove("edit");
 	    };
+
+	    
 	},
 
 
@@ -133,7 +151,7 @@ var view = {
 			taskLabel.className = "label-text";
 			taskInput.className = "toggle";
 			taskInput.type = "checkbox";
-			taskLi.className = " ";	
+			taskLi.className = "li";	
 			taskInput.checked = false;
 
 			if (task.done) {
@@ -162,7 +180,10 @@ var view = {
 	eventListeners: function() {
 
 		var taskOl = document.querySelector('ol');
+		var taskInput = document.getElementById('addTask');
+
 		taskOl.addEventListener('click', function(event) {
+
 			var elementClicked = event.target;
 			if (elementClicked.className === 'del-btn') {
 				handlers.deleteTask(parseInt(elementClicked.parentNode.id));
@@ -174,12 +195,23 @@ var view = {
 
 
 		taskOl.addEventListener('dblclick', function(event) {
+
 			var elementClicked = event.target;
 			if (elementClicked.className === 'label-text' 
 				&& todoList.todoArr[elementClicked.parentNode.id].done === false) {
 				handlers.changeTask(parseInt(elementClicked.parentNode.id));
 			}
 		});
+
+
+		taskInput.addEventListener('keypress', function(event) {
+
+			var elementClicked = event.target;
+			if (event.keyCode === 13) {
+				handlers.addTask(elementClicked.value);
+			}
+		});
+
 	}
 };
 

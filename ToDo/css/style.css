@@ -1,3 +1,13 @@
-.edit {
+
+.edit .del-btn {
+
+	display: none;
+}
+
+.edit .label-text  {
+	display: none;
+}
+
+.edit .toggle {
 	display: none;
 }
