@@ -172,6 +172,7 @@ var view = {
 			if (task.done) {
 				taskLi.className = "completed";
 				taskInput.checked = true;
+				taskLabel.setAttribute("style", "text-decoration: line-through");
 			}			
 
 			taskLi.id = index;
