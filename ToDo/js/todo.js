@@ -1,3 +1,4 @@
+
 var todoList = {
 
 	todoArr: [],
@@ -73,40 +74,46 @@ var handlers = {
 	changeTask: function(index) {
 
 		var taskLi = document.getElementById(index);
-		var taskLabel = taskLi.getElementsByTagName('label')[0];
+		var taskLabel = taskLi.getElementsByTagName('label')[1];
 		var taskInput = document.createElement('input');
 		var taskOl = document.querySelector('ol');
-		console.log(taskLi);
+		console.log(taskLabel);
 		taskInput.value = taskLabel.innerHTML;
 		taskInput.type = "text";
 		taskLi.classList.add('edit');
 		taskLi.appendChild(taskInput);
+		taskInput.className = "editingInput";
 		taskInput.focus();	
 
 		taskInput.onkeydown = function() {
+
 			if (event.keyCode === 13) {
-				taskLi.removeChild(taskInput);
+				
 				if (taskInput.value !== null) {
 					taskLabel.innerHTML = taskInput.value;
+					todoList.todoArr[index].text = taskInput.value;
 				}
 				else {		
 					taskOl.removeChild(taskLi);
 				}
+				taskLi.classList.remove("edit");
+				taskLi.removeChild(taskInput);
 			}	
-
-			taskLi.classList.remove("edit");
 		};
 
 		taskInput.onblur = function() {
-	        taskLi.removeChild(taskInput);
+
+	        
 	        if (taskInput.value !== "") {
 				taskLabel.innerHTML = taskInput.value;
+				todoList.todoArr[index].text = taskInput.value;
 			}
 			else {	
 				taskOl.removeChild(taskLi);
 				todoList.removeTask(index);
 				view.displayTasks();
-			}    
+			}
+			taskLi.removeChild(taskInput);    
 
 			taskLi.classList.remove("edit");
 	    };
@@ -146,13 +153,21 @@ var view = {
 			var taskLi = document.createElement('li');
 			var taskInput = document.createElement('input');
 			var taskLabel = document.createElement('label');
+			var taskSpan = document.createElement('span');
+			var checkLabel = document.createElement('label');
+			var checkDiv = document.createElement('div');
 
+			checkLabel.className = "switch";
+			checkDiv.className = "slider round";
+			
+			taskSpan.className = "addon";
 			taskLabel.textContent = task.text;
 			taskLabel.className = "label-text";
-			taskInput.className = "toggle";
+			taskInput.className = "toggle smooth";
 			taskInput.type = "checkbox";
 			taskLi.className = "li";	
 			taskInput.checked = false;
+			taskSpan.appendChild(taskInput);
 
 			if (task.done) {
 				taskLi.className = "completed";
@@ -160,7 +175,10 @@ var view = {
 			}			
 
 			taskLi.id = index;
-			taskLi.appendChild(taskInput);
+			checkLabel.appendChild(taskInput);
+			checkLabel.appendChild(checkDiv);
+			taskLi.appendChild(checkLabel);
+			taskLi.appendChild(taskSpan);
 			taskLi.appendChild(taskLabel);
 			taskLi.appendChild(view.deleteButton());
 			taskOl.appendChild(taskLi);
@@ -172,7 +190,7 @@ var view = {
 
 		var button = document.createElement('button');
 		button.textContent = 'Delete';
-		button.className = 'del-btn';
+		button.className = 'del-btn btn btn-b smooth';
 		
 		return button;
 	},
@@ -185,11 +203,11 @@ var view = {
 		taskOl.addEventListener('click', function(event) {
 
 			var elementClicked = event.target;
-			if (elementClicked.className === 'del-btn') {
+			if (elementClicked.className === 'del-btn btn btn-b smooth') {
 				handlers.deleteTask(parseInt(elementClicked.parentNode.id));
 			}
-			else if (elementClicked.className === 'toggle') {
-				handlers.toggleTask(parseInt(elementClicked.parentNode.id));
+			else if (elementClicked.className === 'toggle smooth') {
+				handlers.toggleTask(parseInt(elementClicked.parentNode.parentNode.id));
 			}
 		});
 
