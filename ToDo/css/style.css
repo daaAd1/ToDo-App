@@ -3,6 +3,7 @@ button {
   font-size: 15px;
   box-shadow: none;
   padding: 5px 30px;
+  border-radius: 20px;
 }
 
 button.btn-b {
@@ -134,4 +135,18 @@ input:checked + .slider:before {
 .editingInput {
 	font-size: 0.8em;
 	padding-top: 6px;
+}
+
+.toggle-btn {
+  border-style: none;
+}
+
+.delete {
+  float: left;
+  font-size: 12px;
+  padding: 10px;
+}
+
+.btn {
+  cursor: default;
 }

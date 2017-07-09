@@ -1,7 +1,7 @@
-
+	
 var todoList = {
 
-	todoArr: [],
+	todoArr: JSON.parse(localStorage.getItem('tasks')) || [],
 
 
 	addTask: function(task) {
@@ -67,6 +67,7 @@ var handlers = {
 			todoList.addTask(addTaskText.value);	
 		}
 		addTaskText.value = '';
+		
 		view.displayTasks();
 	},
 
@@ -146,9 +147,21 @@ var handlers = {
 var view = {
 
 	displayTasks: function() {
-
+		localStorage.setItem('tasks', JSON.stringify(todoList.todoArr));
 		var taskOl = document.querySelector('ol');
 		taskOl.textContent = '';
+		if (todoList.todoArr.length > 0) {
+			var taskLi = document.createElement('li');
+			var toggleButton = document.createElement('button');
+			toggleButton.classList.add('btn', 'btn-b', 'delete', 'smooth');
+			toggleButton.textContent = 'Toggle';
+			toggleButton.onclick = function() { 
+				handlers.toggleAll(); 
+			};
+			taskLi.appendChild(toggleButton);
+			taskLi.className = 'toggle-btn';
+			taskOl.appendChild(taskLi);
+		}
 		todoList.todoArr.forEach( function(task, index) {
 			var taskLi = document.createElement('li');
 			var taskInput = document.createElement('input');
@@ -235,3 +248,4 @@ var view = {
 };
 
 view.eventListeners();
+view.displayTasks();
